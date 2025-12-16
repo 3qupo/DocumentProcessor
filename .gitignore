@@ -1,0 +1,43 @@
+# Build directories
+build/
+bin/
+lib/
+out/
+*.exe
+*.app
+*.so
+*.dll
+*.dylib
+
+# IDE files
+.vs/
+.vscode/
+*.sln
+*.vcxproj*
+*.vcproj
+*.cmake
+CMakeCache.txt
+CMakeFiles/
+Makefile
+compile_commands.json
+
+# OS specific
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Dependencies
+thirdparty/
+deps/
+external/
+
+# Data
+*.db
+*.sqlite
+*.csv
+/temp/
+/test_output/
+
+# Logs
+*.log
