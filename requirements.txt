@@ -1,0 +1,13 @@
+# Python зависимости
+openpyxl>=3.0.10
+pandas>=1.5.0
+numpy>=1.21.0
+opencv-python>=4.7.0
+pytesseract>=0.3.10
+Pillow>=9.0.0
+python-dateutil>=2.8.2
+pybind11>=2.10.0
+
+# Для сборки C++ части
+cmake>=3.15
+ninja>=1.10.0
