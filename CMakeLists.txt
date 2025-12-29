@@ -45,3 +45,4 @@ install(TARGETS muzloto_core
     RUNTIME DESTINATION bin
     ARCHIVE DESTINATION lib
 )
+

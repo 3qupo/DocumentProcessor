@@ -114,21 +114,23 @@ class MuzlotoScanner:
         # Определяем функции
         self.lib.muzloto_create.restype = ctypes.c_void_p
         self.lib.muzloto_create.argtypes = []
-        
+
         self.lib.muzloto_destroy.argtypes = [ctypes.c_void_p]
-        
+        self.lib.muzloto_destroy.restype = None
+
         self.lib.muzloto_initialize.argtypes = [
             ctypes.c_void_p, ctypes.c_char_p
         ]
         self.lib.muzloto_initialize.restype = ctypes.c_int
-        
+
         self.lib.muzloto_scan_image.argtypes = [
             ctypes.c_void_p, ctypes.c_char_p
         ]
-        self.lib.muzloto_scan_image.restype = ctypes.c_char_p
-        
-        self.lib.muzloto_free_string.argtypes = [ctypes.c_char_p]
-        
+        self.lib.muzloto_scan_image.restype = ctypes.c_void_p   # ← важно
+
+        self.lib.muzloto_free_string.argtypes = [ctypes.c_void_p]  # ← важно
+        self.lib.muzloto_free_string.restype = None
+
         # Создаем сканер
         self.scanner_ptr = self.lib.muzloto_create()
         
@@ -362,26 +364,29 @@ class MuzlotoScanner:
         return result
     
     def _prepare_excel_row(self, scan_data: Dict, image_path: Path,
-                          operator: str, comment: str, 
-                          processing_time_ms: float) -> Dict[str, Any]:
+                      operator: str, comment: str, 
+                      processing_time_ms: float) -> Dict[str, Any]:
         """Создает строку для Excel из данных сканирования."""
         raw_text = scan_data.get('raw_text', '')
         if len(raw_text) > 500:
             raw_text = raw_text[:500] + "..."
-        
+    
         return {
             "Дата заполнения": datetime.now().strftime("%d.%m.%Y %H:%M"),
             "Файл анкеты": image_path.name,
             "Дата визита": scan_data.get('date', ''),
             "Номер столика": scan_data.get('table_number', ''),
             "Место игры": scan_data.get('location', ''),
-            "Довольны посещением": scan_data.get('satisfaction', ''),
-            "Понравился плейлист": scan_data.get('playlist_liked', ''),
+        
+        # Рейтинги (1-10) - ИЗМЕНИТЬ ЗДЕСЬ!
+            "Довольны посещением": scan_data.get('satisfaction_rating', ''),  # было 'satisfaction'
+            "Понравился плейлист": scan_data.get('playlist_rating', ''),      # было 'playlist_liked'
+            "Понравилась локация": scan_data.get('location_rating', ''),      # было 'location_liked'
+            "Понравились кухня и бар": scan_data.get('kitchen_rating', ''),   # было 'kitchen_liked'
+            "Устроил сервис": scan_data.get('service_rating', ''),           # было 'service_ok'
+            "Понравился ведущий": scan_data.get('host_rating', ''),          # было 'host_work'
+        
             "Треки для добавления": scan_data.get('tracks_to_add', ''),
-            "Понравилась локация": scan_data.get('location_liked', ''),
-            "Понравились кухня и бар": scan_data.get('kitchen_liked', ''),
-            "Устроил сервис": scan_data.get('service_ok', ''),
-            "Понравился ведущий": scan_data.get('host_work', ''),
             "Количество посещений": scan_data.get('visits_count', ''),
             "Оценка стоимости": scan_data.get('ticket_price', ''),
             "Знают о заказе": scan_data.get('know_booking', ''),
@@ -395,7 +400,7 @@ class MuzlotoScanner:
             "Оператор": operator,
             "Комментарий": comment
         }
-    
+
     def _create_error_row(self, image_path: str, error: str, 
                          operator: str) -> Dict[str, Any]:
         """Создает строку с ошибкой для Excel."""
